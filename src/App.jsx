@@ -26,14 +26,23 @@ import {
 } from 'firebase/firestore';
 
 // --- Global Variables (Provided by Canvas Environment) ---
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-// Ensure the config is parsed if it exists
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+// --- Firebase Config (Correctly loaded from .env using Vite's import.meta.env) ---
+const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+const appId = import.meta.env.VITE_FIREBASE_APP_ID; 
+// For standard Vite/React development, we assume no initial token
+const initialAuthToken = null; 
 
 // The base URL for the Gemini API
 const GEMINI_API_URL_BASE = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`;
-const API_KEY = ""; // Canvas environment automatically provides the key
+// Load the Gemini API key from the environment file for security
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 // Utility to implement exponential backoff for API calls
 const withRetry = async (fn, maxRetries = 5) => {
